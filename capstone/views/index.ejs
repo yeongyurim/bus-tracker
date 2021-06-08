@@ -1,0 +1,59 @@
+<head>
+	<title><%=title%></title>
+	<link rel="stylesheet" href="stylesheets/style.css">
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="https://unpkg.com/scrollreveal"></script>
+	<script src="javascripts/ani.js">
+
+
+	</script>
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+	<header class="l-header">
+		<p class="nav__logo">🚍 안산대학교 셔틀버스 </p>
+	</header>
+	<main class="l-main">
+		<section class="home" id="home">
+				<div class="home__container bd-grid">
+						<h1 class="home__title"><span>Bus</span><br>Now.<br></h1>
+						<div class="home__map">
+							<div id="map" style="width:500px;height:400px;"></div>
+							<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=41d256ad7e6c4c5be868d4f42d83418f"></script>
+						</div>
+						<div class="home__scroll">
+								<a href="#about" class="home__scroll-link"><i class='bx bx-up-arrow-alt' ></i>Next Bus</a>
+						</div>
+				</div>
+		</section>
+	</main>
+		<div class="RT">
+			<!-- <table>
+				<tr>
+			 		<th id="conn">버스 비운행중🔴</th>
+				</tr>
+				<tr>
+					<td>학교</td><td id="runi"></td>
+				</tr>
+				<tr>
+					<td>상록수역</td><td id="rsta"></td>
+				</tr>
+			</table> -->
+			<section class="about section" id="about">
+					<h2 class="section-title">Next Bus</h2>
+
+					<div class="about__container bd-grid">
+						<table class="about__table">
+							<tr>
+								<td>학교</td><td id="univ"></td>
+							</tr>
+							<tr>
+								<td>역</td><td id="stat"></td>
+							</tr>
+						</table>
+					</div>
+			</section>
+	<script type="text/javascript" src="javascripts/busSchedule.js"></script>
+	<script type="text/javascript" src="javascripts/rtSchedule.js"></script>
+</body>

@@ -1,0 +1,149 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+var date = require('date-utils');
+var app = require('../app');
+var debug = require('debug')('capstone:server');
+var http = require('http');
+var socketio = require('socket.io');
+var moment = require('moment');
+var mysql = require('mysql');
+
+function now() {
+  var newDate = new Date();
+  var time = newDate.toFormat('YYYY-MM-DD- HH24:MI:SS');
+  return time;
+}
+
+// DBMS connection
+try{
+  var client = mysql.createConnection({
+    host :'localhost',
+    port : 3333,
+    user:'root',
+    password:'123456',
+    database: 'capstone'
+  });
+}
+catch(e) {
+  console.log(e.name);
+  console.log(e.message);
+}
+
+client.connect((err) => {
+  if (err) throw err;
+  console.log('DBMS Connected!-----!!');
+});
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '8080');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+// 소켓 io 연결
+
+var io = require('socket.io')(server);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+
+/*
+  configuration socket.io
+  */
+
+
+
+io.sockets.on('connection',function(socket){
+
+  console.log('소켓이 연결되었습니다.');
+
+  socket.on('bus',function(d){
+    console.log(now(),'Client send Data:',d);
+
+    // 버스 위치 DB에 저장
+    client.query('INSERT INTO location (time,xpos,ypos) values(?,?,?)',
+      [now(),d.lat,d.lon],
+      function() {
+        console.log('location discribed in DB')
+    });
+
+    io.sockets.emit('good',d);
+  })
+})
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
